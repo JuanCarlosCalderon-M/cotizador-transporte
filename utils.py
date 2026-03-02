@@ -61,21 +61,22 @@ def inyectar_css():
     
 import math
 
-def calcular_tarifa_viaje(inputs, grupo_data):
+def calcular_tarifa_viaje(inputs, grupo_data: dict[dict | str]):
     """
     Realiza el cálculo matemático de prorrateo y variables para obtener la tarifa final.
     """
-    config = grupo_data.get("Configuracion_Operativa", {})
-    variables = grupo_data.get("Costos_Variables", {})
-    fijos_veh = grupo_data.get("Costos_Fijos_Vehiculo", {})
-    fijos_op = grupo_data.get("Costos_Fijos_Operador", {})
-
+    config: dict = grupo_data.get("Configuracion_Operativa", {})
+    variables: dict = grupo_data.get("Costos_Variables", {})
+    fijos_veh: dict = grupo_data.get("Costos_Fijos_Vehiculo", {})
+    fijos_op: dict = grupo_data.get("Costos_Fijos_Operador", {})
+    
     velocidad = float(config.get("Velocidad", 60))
     margen = float(config.get("Margen", 0.03))
     num_operadores = inputs.get("num_operadores", 1)
 
     # --- Variables por km ---
-    combustible = float(variables.get("Combustible_Km", 0))
+    combustible_iva = float(variables.get("Combustible_Km", 0))
+    combustible = combustible_iva / 1.16
     bono = float(variables.get("Bono_Operador", 0)) * num_operadores 
     riesgo = float(variables.get("Factor_Riesgo", 0))
     km_arrendadora = float(variables.get("Km_Arrendadora", 0))
@@ -122,7 +123,7 @@ def calcular_tarifa_viaje(inputs, grupo_data):
     fijo_por_viaje = total_fijo_mensual / viajes_mes if viajes_mes > 0 else 0
     variable_km_viaje = distancia_total * costo_km_total
     
-    casetas_totales = inputs["casetas"] * 2
+    casetas_totales = (inputs["casetas"] * 2) / 1.16 #Eliminación de IVA
     extras_viaje = casetas_totales + inputs["pension"] + inputs["maniobras"] + inputs["otros"]
 
     costo_total_base = fijo_por_viaje + variable_km_viaje + extras_viaje
