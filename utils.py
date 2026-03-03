@@ -72,9 +72,9 @@ def calcular_tarifa_viaje(inputs, grupo_data: dict[dict | str]):
     velocidad = float(config.get("Velocidad", 60))
     margen = float(config.get("Margen", 0.03))
     
-    # --- NUEVAS VARIABLES DE TIEMPO LEY FEDERAL ---
+    # --- VARIABLES DE TIEMPO LEY FEDERAL ---
     horas_laborales_semana = float(config.get("Horas_Laborales_Semana", 48.0))
-    horas_extra_semana = float(config.get("Horas_Extra_Semana", 9.0))
+    horas_extra_semana = float(config.get("Horas_Extra_Semana", 0.0))
     
     num_operadores = inputs.get("num_operadores", 1)
 
@@ -104,11 +104,10 @@ def calcular_tarifa_viaje(inputs, grupo_data: dict[dict | str]):
     t_c = inputs["horas_carga"]
     t_d = inputs["horas_descarga"]
 
-    # Tiempo de Ciclo Total (Eliminada NOM-087, ciclo limpio)
+    # Tiempo de Ciclo Total
     horas_totales = t_r + t_c + t_d
 
-    # --- Cálculos de Frecuencia (Por Ley Federal) ---
-    # Se multiplica por num_operadores ya que 2 operadores duplican la disponibilidad del camión
+    # --- Cálculos de Frecuencia ---
     horas_semana_disponibles = (horas_laborales_semana + horas_extra_semana) * num_operadores
 
     if horas_totales > 0:
@@ -116,9 +115,9 @@ def calcular_tarifa_viaje(inputs, grupo_data: dict[dict | str]):
     else:
         viajes_semana_puros = 0
 
-    viajes_semana = round(viajes_semana_puros * 2) / 2
-    viajes_mes_bruto = viajes_semana * 4.34 
-    viajes_mes = round(viajes_mes_bruto * 2) / 2
+    # --- CAMBIO: Se elimina el redondeo artificial a 0.5. Se fijan a 2 decimales exactos ---
+    viajes_semana = round(viajes_semana_puros, 2)
+    viajes_mes = round(viajes_semana * 4.34, 2)
 
     # --- Cálculos Financieros ---
     fijo_por_viaje = total_fijo_mensual / viajes_mes if viajes_mes > 0 else 0
