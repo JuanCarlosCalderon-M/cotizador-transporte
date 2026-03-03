@@ -169,11 +169,22 @@ with tab2:
         st.markdown("---")
         
         st.subheader("Gestionar Grupo Existente")
+        
+        # --- CAMBIO: Función para formatear el texto del dropdown ---
+        def formato_grupo(id_g):
+            fila = df_grupos[df_grupos['ID_Grupo'] == id_g].iloc[0]
+            uni = fila.get('Tipo_Unidad', '')
+            equi = fila.get('Tipo_Equipo', '')
+            rut = fila.get('Tipo_Ruta', '')
+            return f"{id_g} - {uni} | {equi} | {rut}"
+
         grupos_activos = df_grupos[df_grupos['Estado'] == 'Activo']['ID_Grupo'].tolist()
-        id_a_gestionar = st.selectbox("Selecciona el ID a Editar o Inactivar:", grupos_activos, index=None)
+        
+        # --- CAMBIO: Aplicamos el format_func ---
+        id_a_gestionar = st.selectbox("Selecciona el Grupo a Editar o Inactivar:", grupos_activos, format_func=formato_grupo, index=None)
         
         if id_a_gestionar:
-            grupo_data = df_grupos[df_grupos['ID_Grupo', 'Tipo_Unidad', 'Tipo_Equipo', 'Tipo_Ruta'] == id_a_gestionar].iloc[0]
+            grupo_data = df_grupos[df_grupos['ID_Grupo'] == id_a_gestionar].iloc[0]
             
             config_actual = grupo_data.get('Configuracion_Operativa', {})
             var_actual = grupo_data.get('Costos_Variables', {})
