@@ -40,6 +40,9 @@ with tab1:
             vel_gobernada = st.number_input("Velocidad Gobernada (Km/hr)", value=60.0, key="new_vel")
             rendimiento = st.number_input("Rendimiento Promedio (Km/Lt)", value=2.5, key="new_rend")
             margen_porcentaje = st.number_input("Margen Objetivo (%)", value=3.0, step=0.5, format="%.2f", key="new_mar")
+            horas_lab = st.number_input("Horas Laborales/Semana", value=48.0, step=1.0, key="new_h_lab")
+            horas_ext = st.number_input("Horas Extra/Semana", value=0.0, step=1.0, key="new_h_ext")
+            
         with col6:
             precio_combustible = st.number_input("Precio Combustible ($/Lt)", value=23.50, key="new_comb")
             bono_operador = st.number_input("Bono Operador $/km", value=5.35, key="new_bono")
@@ -108,7 +111,13 @@ with tab1:
                 margen_decimal = margen_porcentaje / 100.0
                 combustible_km = precio_combustible / rendimiento if rendimiento > 0 else 0
                 
-                config_op = {"Velocidad": vel_gobernada, "Rendimiento": rendimiento, "Margen": margen_decimal}
+                config_op = {
+                    "Velocidad": vel_gobernada, 
+                    "Rendimiento": rendimiento, 
+                    "Margen": margen_decimal,
+                    "Horas_Laborales_Semana": horas_lab,
+                    "Horas_Extra_Semana": horas_ext
+                }
                 
                 costos_var = {
                     "Precio_Combustible": precio_combustible, 
@@ -191,6 +200,9 @@ with tab2:
                     vel_ed = st.number_input("Velocidad Gobernada (Km/hr)", value=float(config_actual.get("Velocidad", 60.0)), key=f"ed_vel_{id_a_gestionar}")
                     rend_ed = st.number_input("Rendimiento Promedio (Km/Lt)", value=float(config_actual.get("Rendimiento", 2.5)), key=f"ed_rend_{id_a_gestionar}")
                     margen_ed = st.number_input("Margen Objetivo (%)", value=float(config_actual.get("Margen", 0.03) * 100), step=0.5, format="%.2f", key=f"ed_mar_{id_a_gestionar}")
+                    horas_lab_ed = st.number_input("Horas Laborales/Semana", value=float(config_actual.get("Horas_Laborales_Semana", 48.0)), step=1.0, key=f"ed_h_lab_{id_a_gestionar}")
+                    horas_ext_ed = st.number_input("Horas Extra/Semana", value=float(config_actual.get("Horas_Extra_Semana", 0.0)), step=1.0, key=f"ed_h_ext_{id_a_gestionar}")
+
                 with c6:
                     rend_actual = float(config_actual.get("Rendimiento", 2.5))
                     comb_km_actual = float(var_actual.get("Combustible_Km", 11.25))
@@ -252,7 +264,14 @@ with tab2:
                         margen_decimal_ed = margen_ed / 100.0
                         combustible_km_ed = precio_comb_ed / rend_ed if rend_ed > 0 else 0
                         
-                        config_op_nuevo = {"Velocidad": vel_ed, "Rendimiento": rend_ed, "Margen": margen_decimal_ed}
+                        config_op_nuevo = {
+                            "Velocidad": vel_ed, 
+                            "Rendimiento": rend_ed, 
+                            "Margen": margen_decimal_ed,
+                            "Horas_Laborales_Semana": horas_lab_ed,
+                            "Horas_Extra_Semana": horas_ext_ed
+                        }
+                        
                         costos_var_nuevo = {
                             "Precio_Combustible": precio_comb_ed, 
                             "Combustible_Km": combustible_km_ed, 

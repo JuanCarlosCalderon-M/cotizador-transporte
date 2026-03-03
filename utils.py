@@ -71,6 +71,11 @@ def calcular_tarifa_viaje(inputs, grupo_data: dict[dict | str]):
     
     velocidad = float(config.get("Velocidad", 60))
     margen = float(config.get("Margen", 0.03))
+    
+    # --- NUEVAS VARIABLES DE TIEMPO LEY FEDERAL ---
+    horas_laborales_semana = float(config.get("Horas_Laborales_Semana", 48.0))
+    horas_extra_semana = float(config.get("Horas_Extra_Semana", 0.0))
+    
     num_operadores = inputs.get("num_operadores", 1)
 
     # --- Variables por km ---
@@ -99,18 +104,15 @@ def calcular_tarifa_viaje(inputs, grupo_data: dict[dict | str]):
     t_c = inputs["horas_carga"]
     t_d = inputs["horas_descarga"]
 
-    # --- Lógica NOM-087-SCT-2-2017 ---
-    t_p = math.floor(t_r / 5.0) * 0.5
-    if num_operadores >= 2:
-        t_s = 0
-    else:
-        t_s = math.floor(t_r / 14.0) * 8.0
+    # Tiempo de Ciclo Total (Eliminada NOM-087, ciclo limpio)
+    horas_totales = t_r + t_c + t_d
 
-    horas_totales = t_r + t_c + t_d + t_p + t_s
+    # --- Cálculos de Frecuencia (Por Ley Federal) ---
+    # Se multiplica por num_operadores ya que 2 operadores duplican la disponibilidad del camión
+    horas_semana_disponibles = (horas_laborales_semana + horas_extra_semana) * num_operadores
 
-    # --- Cálculos de Frecuencia ---
     if horas_totales > 0:
-        viajes_semana_puros = 144.0 / horas_totales
+        viajes_semana_puros = horas_semana_disponibles / horas_totales
     else:
         viajes_semana_puros = 0
 
