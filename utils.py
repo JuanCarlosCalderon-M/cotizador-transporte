@@ -62,7 +62,7 @@ def inyectar_css():
 
 def calcular_tarifa_viaje(inputs, grupo_data: dict[dict | str]):
     """
-    Realiza el cálculo matemático de prorrateo y variables para obtener la tarifa final.
+    Realiza el cálculo matemático de prorrateo y variables para obtener la tarifa final y su desglose.
     """
     config: dict = grupo_data.get("Configuracion_Operativa", {})
     variables: dict = grupo_data.get("Costos_Variables", {})
@@ -77,7 +77,6 @@ def calcular_tarifa_viaje(inputs, grupo_data: dict[dict | str]):
     combustible_iva = float(variables.get("Combustible_Km", 0))
     combustible = combustible_iva / 1.16
     
-    # --- Cálculo de Bono Operador con Carga Fiscal y Social ---
     bono_base = float(variables.get("Bono_Operador", 0)) * num_operadores 
     carga_fiscal = float(variables.get("Carga_Fiscal", 7.5)) / 100.0
     carga_social = float(variables.get("Carga_Social", 31.0)) / 100.0
@@ -96,32 +95,26 @@ def calcular_tarifa_viaje(inputs, grupo_data: dict[dict | str]):
 
     # --- Distancia y Tiempos Base ---
     distancia_total = inputs["distancia_ida"] * 2
-    t_r = distancia_total / velocidad if velocidad > 0 else 0  # Tiempo de recorrido total
+    t_r = distancia_total / velocidad if velocidad > 0 else 0 
     t_c = inputs["horas_carga"]
     t_d = inputs["horas_descarga"]
 
     # --- Lógica NOM-087-SCT-2-2017 ---
-    # Pausa de 30 min (0.5 hrs) por cada 5 horas de conducción
     t_p = math.floor(t_r / 5.0) * 0.5
-    
-    # Descanso de 8 horas por cada 14 horas de conducción
-    # Si hay 2 o más operadores, el camión no se detiene a dormir (t_s = 0)
     if num_operadores >= 2:
         t_s = 0
     else:
         t_s = math.floor(t_r / 14.0) * 8.0
 
-    # Tiempo de Ciclo Total (T_ciclo)
     horas_totales = t_r + t_c + t_d + t_p + t_s
 
-    # --- Cálculos de Frecuencia (Base 144 hrs = 6 días laborales) ---
+    # --- Cálculos de Frecuencia ---
     if horas_totales > 0:
         viajes_semana_puros = 144.0 / horas_totales
     else:
         viajes_semana_puros = 0
 
     viajes_semana = round(viajes_semana_puros * 2) / 2
-    
     viajes_mes_bruto = viajes_semana * 4.34 
     viajes_mes = round(viajes_mes_bruto * 2) / 2
 
@@ -129,7 +122,7 @@ def calcular_tarifa_viaje(inputs, grupo_data: dict[dict | str]):
     fijo_por_viaje = total_fijo_mensual / viajes_mes if viajes_mes > 0 else 0
     variable_km_viaje = distancia_total * costo_km_total
     
-    casetas_totales = (inputs["casetas"] * 2) / 1.16 # Eliminación de IVA
+    casetas_totales = (inputs["casetas"] * 2) / 1.16 
     extras_viaje = casetas_totales + inputs["pension"] + inputs["maniobras"] + inputs["otros"]
 
     costo_total_base = fijo_por_viaje + variable_km_viaje + extras_viaje
@@ -140,6 +133,17 @@ def calcular_tarifa_viaje(inputs, grupo_data: dict[dict | str]):
         costo_total_viaje = costo_total_base
 
     precio_venta = costo_total_viaje / (1 - margen) if margen < 1 else costo_total_viaje
+
+    # --- DESGLOSE DETALLADO POR VIAJE ---
+    desglose_fijos_veh = {k: round(float(v) / viajes_mes, 2) if viajes_mes > 0 else 0 for k, v in fijos_veh.items()}
+    desglose_fijos_op = {k: round((float(v) * num_operadores) / viajes_mes, 2) if viajes_mes > 0 else 0 for k, v in fijos_op.items()}
+    
+    desglose_variables = {
+        "Combustible (Sin IVA)": round(combustible * distancia_total, 2),
+        "Bono Operador (Integrado)": round(bono * distancia_total, 2),
+        "Factor de Riesgo": round(riesgo * distancia_total, 2),
+        "Km Arrendadora": round(km_arrendadora * distancia_total, 2)
+    }
 
     return {
         "distancia_total": distancia_total,
@@ -152,5 +156,8 @@ def calcular_tarifa_viaje(inputs, grupo_data: dict[dict | str]):
         "extras_viaje": round(extras_viaje, 2),
         "costo_total": round(costo_total_viaje, 2),
         "precio_venta": round(precio_venta, 2),
-        "margen_esperado": margen
+        "margen_esperado": margen,
+        "desglose_fijos_veh": desglose_fijos_veh,
+        "desglose_fijos_op": desglose_fijos_op,
+        "desglose_variables": desglose_variables
     }

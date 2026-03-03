@@ -85,10 +85,9 @@ if st.button("🧮 Calcular Tarifa", type="primary", use_container_width=True):
         
         texto_modalidad = " (+60% aplicado al Costo Total y Tarifa)" if modalidad == "Round trip" else ""
         
-        # --- CAMBIO: Insertamos viajes estimados a la semana en el texto informativo ---
         st.markdown(f"<p style='text-align: center; color: gray;'>Modalidad: <strong>{modalidad}</strong>{texto_modalidad} | Operadores: {num_operadores} | Margen base: {res['margen_esperado']*100}% | Viajes est. semana: <strong>{res['viajes_semana']}</strong> | Viajes est. mes: <strong>{res['viajes_mes']}</strong></p>", unsafe_allow_html=True)
         
-        st.subheader("Desglose del Costo Total")
+        st.subheader("Gran Total de Costos")
         m0, m1, m2, m3, m4 = st.columns(5)
         m0.metric("Fijos Mensuales", f"${res['fijo_mensual']:,.2f}")
         m1.metric("Fijo (Prorrateo Viaje)", f"${res['fijo_por_viaje']:,.2f}")
@@ -96,8 +95,24 @@ if st.button("🧮 Calcular Tarifa", type="primary", use_container_width=True):
         m3.metric("Extras (Casetas x2, etc)", f"${res['extras_viaje']:,.2f}")
         m4.metric("Costo Total del Viaje", f"${res['costo_total']:,.2f}")
 
-        if not df_otros_limpio.empty and total_otros > 0:
-            st.markdown("<br>**Detalle de Otros Gastos Incluidos en el Viaje:**", unsafe_allow_html=True)
-            for _, row in df_otros_limpio.iterrows():
-                if float(row['Monto ($)']) > 0:
-                    st.markdown(f" - {row['Concepto']}: **${float(row['Monto ($)']):,.2f}**")
+        # --- SECCIÓN DE DESGLOSE ---
+        st.markdown("<br>", unsafe_allow_html=True)
+        with st.expander("📊 Ver Desglose Detallado por Viaje", expanded=False):
+            col_fijos, col_vars = st.columns(2)
+            
+            with col_fijos:
+                st.markdown("#### Costos Fijos (Prorrateados a este viaje)")
+                df_fijos_v = pd.DataFrame(list(res["desglose_fijos_veh"].items()), columns=["Concepto (Vehículo)", "Monto ($)"])
+                st.dataframe(df_fijos_v[df_fijos_v["Monto ($)"] > 0], hide_index=True, width="stretch")
+                
+                df_fijos_o = pd.DataFrame(list(res["desglose_fijos_op"].items()), columns=["Concepto (Operador)", "Monto ($)"])
+                st.dataframe(df_fijos_o[df_fijos_o["Monto ($)"] > 0], hide_index=True, width="stretch")
+                
+            with col_vars:
+                st.markdown("#### Costos Variables (Por Km de este viaje)")
+                df_vars = pd.DataFrame(list(res["desglose_variables"].items()), columns=["Concepto Variable", "Monto ($)"])
+                st.dataframe(df_vars[df_vars["Monto ($)"] > 0], hide_index=True, width="stretch")
+
+                if not df_otros_limpio.empty and total_otros > 0:
+                    st.markdown("#### Costos Extras")
+                    st.dataframe(df_otros_limpio, hide_index=True, width="stretch")
