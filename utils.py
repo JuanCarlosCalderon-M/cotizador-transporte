@@ -59,7 +59,6 @@ def inyectar_css():
     </style>
     """, unsafe_allow_html=True)
     
-import math
 
 def calcular_tarifa_viaje(inputs, grupo_data: dict[dict | str]):
     """
@@ -77,7 +76,14 @@ def calcular_tarifa_viaje(inputs, grupo_data: dict[dict | str]):
     # --- Variables por km ---
     combustible_iva = float(variables.get("Combustible_Km", 0))
     combustible = combustible_iva / 1.16
-    bono = float(variables.get("Bono_Operador", 0)) * num_operadores 
+    
+    # --- Cálculo de Bono Operador con Carga Fiscal y Social ---
+    bono_base = float(variables.get("Bono_Operador", 0)) * num_operadores 
+    carga_fiscal = float(variables.get("Carga_Fiscal", 7.5)) / 100.0
+    carga_social = float(variables.get("Carga_Social", 31.0)) / 100.0
+    
+    bono = bono_base * (1 + carga_fiscal) * (1 + carga_social)
+    
     riesgo = float(variables.get("Factor_Riesgo", 0))
     km_arrendadora = float(variables.get("Km_Arrendadora", 0))
     
@@ -123,7 +129,7 @@ def calcular_tarifa_viaje(inputs, grupo_data: dict[dict | str]):
     fijo_por_viaje = total_fijo_mensual / viajes_mes if viajes_mes > 0 else 0
     variable_km_viaje = distancia_total * costo_km_total
     
-    casetas_totales = (inputs["casetas"] * 2) / 1.16 #Eliminación de IVA
+    casetas_totales = (inputs["casetas"] * 2) / 1.16 # Eliminación de IVA
     extras_viaje = casetas_totales + inputs["pension"] + inputs["maniobras"] + inputs["otros"]
 
     costo_total_base = fijo_por_viaje + variable_km_viaje + extras_viaje

@@ -43,6 +43,8 @@ with tab1:
         with col6:
             precio_combustible = st.number_input("Precio Combustible ($/Lt)", value=23.50, key="new_comb")
             bono_operador = st.number_input("Bono Operador $/km", value=5.35, key="new_bono")
+            carga_fiscal = st.number_input("Carga Fiscal (%)", value=7.5, step=0.5, format="%.2f", key="new_fiscal")
+            carga_social = st.number_input("Carga Social (%)", value=31.0, step=0.5, format="%.2f", key="new_social")
             factor_riesgo = st.number_input("Factor de Riesgo $/km", value=1.5, key="new_riesgo")
             km_arrendadora = st.number_input("Km Arrendadora $/km", value=1.25, key="new_kma")
 
@@ -112,6 +114,8 @@ with tab1:
                     "Precio_Combustible": precio_combustible, 
                     "Combustible_Km": combustible_km, 
                     "Bono_Operador": bono_operador, 
+                    "Carga_Fiscal": carga_fiscal,
+                    "Carga_Social": carga_social,
                     "Factor_Riesgo": factor_riesgo, 
                     "Km_Arrendadora": km_arrendadora
                 }
@@ -194,6 +198,8 @@ with tab2:
                     
                     precio_comb_ed = st.number_input("Precio Combustible ($/Lt)", value=precio_base_actual, key=f"ed_comb_{id_a_gestionar}")
                     bono_ed = st.number_input("Bono Operador $/km", value=float(var_actual.get("Bono_Operador", 5.35)), key=f"ed_bono_{id_a_gestionar}")
+                    fiscal_ed = st.number_input("Carga Fiscal (%)", value=float(var_actual.get("Carga_Fiscal", 7.5)), step=0.5, format="%.2f", key=f"ed_fiscal_{id_a_gestionar}")
+                    social_ed = st.number_input("Carga Social (%)", value=float(var_actual.get("Carga_Social", 31.0)), step=0.5, format="%.2f", key=f"ed_social_{id_a_gestionar}")
                     riesgo_ed = st.number_input("Factor de Riesgo $/km", value=float(var_actual.get("Factor_Riesgo", 1.5)), key=f"ed_riesgo_{id_a_gestionar}")
                     kma_ed = st.number_input("Km Arrendadora $/km", value=float(var_actual.get("Km_Arrendadora", 1.25)), key=f"ed_kma_{id_a_gestionar}")
 
@@ -251,6 +257,8 @@ with tab2:
                             "Precio_Combustible": precio_comb_ed, 
                             "Combustible_Km": combustible_km_ed, 
                             "Bono_Operador": bono_ed, 
+                            "Carga_Fiscal": fiscal_ed,
+                            "Carga_Social": social_ed,
                             "Factor_Riesgo": riesgo_ed, 
                             "Km_Arrendadora": kma_ed
                         }
