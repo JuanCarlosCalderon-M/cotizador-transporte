@@ -74,7 +74,7 @@ def calcular_tarifa_viaje(inputs, grupo_data: dict[dict | str]):
     
     # --- NUEVAS VARIABLES DE TIEMPO LEY FEDERAL ---
     horas_laborales_semana = float(config.get("Horas_Laborales_Semana", 48.0))
-    horas_extra_semana = float(config.get("Horas_Extra_Semana", 0.0))
+    horas_extra_semana = float(config.get("Horas_Extra_Semana", 9.0))
     
     num_operadores = inputs.get("num_operadores", 1)
 
