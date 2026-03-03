@@ -173,7 +173,7 @@ with tab2:
         id_a_gestionar = st.selectbox("Selecciona el ID a Editar o Inactivar:", grupos_activos, index=None)
         
         if id_a_gestionar:
-            grupo_data = df_grupos[df_grupos['ID_Grupo'] == id_a_gestionar].iloc[0]
+            grupo_data = df_grupos[df_grupos['ID_Grupo', 'Tipo_Unidad', 'Tipo_Equipo', 'Tipo_Ruta'] == id_a_gestionar].iloc[0]
             
             config_actual = grupo_data.get('Configuracion_Operativa', {})
             var_actual = grupo_data.get('Costos_Variables', {})
