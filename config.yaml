@@ -4,10 +4,10 @@ credentials:
       email: jsmith@esgari.com
       name: Rodrigo
       password: '$2b$12$wmqd5kPbJGSI5bbFp5Ys0etfeZ/BMTFxNdheVCfT8ddP4O/8vaNYm' 
-    rtorres:
+    Chavita:
       email: rtorres@esgari.com
       name: Roberto Torres
-      password: '$2b$12$jf4zJe7zVKfmzeBIZ5krXeBxij3kJIgXwyh86ndIaaYm.AxiAmVM.'
+      password: '$2b$12$QD.ewzmQ91dyTpBdVyww5Oe63hnoEtLvzCCH8QyGMAmOxOm6Ahi4y'
 cookie:
   expiry_days: 0
   key: "firma_secreta_esgari_2026_super_larga_y_segura_12345" # <- Debe tener 32+ caracteres
