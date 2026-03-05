@@ -70,11 +70,7 @@ def calcular_tarifa_viaje(inputs, grupo_data: dict[dict | str]):
     fijos_op: dict = grupo_data.get("Costos_Fijos_Operador", {})
     
     velocidad = float(config.get("Velocidad", 60))
-    margen = float(config.get("Margen", 0.03))
-    
-    # --- VARIABLES DE TIEMPO LEY FEDERAL (Comentadas por solicitud) ---
-    # horas_laborales_semana = float(config.get("Horas_Laborales_Semana", 48.0))
-    # horas_extra_semana = float(config.get("Horas_Extra_Semana", 0.0))
+    margen = float(config.get("Margen", 0.03)) 
     
     num_operadores = inputs.get("num_operadores", 1)
 
@@ -107,19 +103,11 @@ def calcular_tarifa_viaje(inputs, grupo_data: dict[dict | str]):
     # Tiempo de Ciclo Total
     horas_totales = t_r + t_c + t_d
 
-    # --- Cálculos de Frecuencia (Cálculo automático comentado) ---
-    # horas_semana_disponibles = (horas_laborales_semana + horas_extra_semana) * num_operadores
-    # if horas_totales > 0:
-    #     viajes_semana_puros = horas_semana_disponibles / horas_totales
-    # else:
-    #     viajes_semana_puros = 0
-
-    # --- CAMBIO: Tomar viajes por semana directamente del input manual ---
+    # --- Frecuencia: Input manual ---
     viajes_semana = float(inputs.get("viajes_semana", 1.0))
     viajes_mes = round(viajes_semana * 4.34, 2)
 
     # --- Cálculos Financieros ---
-    # Prorrateo usando el cálculo de viajes_mes basado en el input manual
     fijo_por_viaje = total_fijo_mensual / viajes_mes if viajes_mes > 0 else 0
     variable_km_viaje = distancia_total * costo_km_total
     
@@ -133,6 +121,7 @@ def calcular_tarifa_viaje(inputs, grupo_data: dict[dict | str]):
     else:
         costo_total_viaje = costo_total_base
 
+    # Cálculo de tarifa de venta con el margen objetivo de la base de datos
     precio_venta = costo_total_viaje / (1 - margen) if margen < 1 else costo_total_viaje
 
     # --- DESGLOSE DETALLADO POR VIAJE ---

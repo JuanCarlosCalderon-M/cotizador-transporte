@@ -40,8 +40,6 @@ with tab1:
             vel_gobernada = st.number_input("Velocidad Gobernada (Km/hr)", value=60.0, key="new_vel")
             rendimiento = st.number_input("Rendimiento Promedio (Km/Lt)", value=2.5, key="new_rend")
             margen_porcentaje = st.number_input("Margen Objetivo (%)", value=3.0, step=0.5, format="%.2f", key="new_mar")
-            horas_lab = st.number_input("Horas Laborales/Semana", value=48.0, step=1.0, key="new_h_lab")
-            horas_ext = st.number_input("Horas Extra/Semana", value=0.0, step=1.0, key="new_h_ext")
             
         with col6:
             precio_combustible = st.number_input("Precio Combustible ($/Lt)", value=23.50, key="new_comb")
@@ -114,9 +112,7 @@ with tab1:
                 config_op = {
                     "Velocidad": vel_gobernada, 
                     "Rendimiento": rendimiento, 
-                    "Margen": margen_decimal,
-                    "Horas_Laborales_Semana": horas_lab,
-                    "Horas_Extra_Semana": horas_ext
+                    "Margen": margen_decimal
                 }
                 
                 costos_var = {
@@ -170,7 +166,6 @@ with tab2:
         
         st.subheader("Gestionar Grupo Existente")
         
-        # --- CAMBIO: Función para formatear el texto del dropdown ---
         def formato_grupo(id_g):
             fila = df_grupos[df_grupos['ID_Grupo'] == id_g].iloc[0]
             uni = fila.get('Tipo_Unidad', '')
@@ -180,7 +175,6 @@ with tab2:
 
         grupos_activos = df_grupos[df_grupos['Estado'] == 'Activo']['ID_Grupo'].tolist()
         
-        # --- CAMBIO: Aplicamos el format_func ---
         id_a_gestionar = st.selectbox("Selecciona el Grupo a Editar o Inactivar:", grupos_activos, format_func=formato_grupo, index=None)
         
         if id_a_gestionar:
@@ -211,8 +205,6 @@ with tab2:
                     vel_ed = st.number_input("Velocidad Gobernada (Km/hr)", value=float(config_actual.get("Velocidad", 60.0)), key=f"ed_vel_{id_a_gestionar}")
                     rend_ed = st.number_input("Rendimiento Promedio (Km/Lt)", value=float(config_actual.get("Rendimiento", 2.5)), key=f"ed_rend_{id_a_gestionar}")
                     margen_ed = st.number_input("Margen Objetivo (%)", value=float(config_actual.get("Margen", 0.03) * 100), step=0.5, format="%.2f", key=f"ed_mar_{id_a_gestionar}")
-                    horas_lab_ed = st.number_input("Horas Laborales/Semana", value=float(config_actual.get("Horas_Laborales_Semana", 48.0)), step=1.0, key=f"ed_h_lab_{id_a_gestionar}")
-                    horas_ext_ed = st.number_input("Horas Extra/Semana", value=float(config_actual.get("Horas_Extra_Semana", 0.0)), step=1.0, key=f"ed_h_ext_{id_a_gestionar}")
 
                 with c6:
                     rend_actual = float(config_actual.get("Rendimiento", 2.5))
@@ -278,9 +270,7 @@ with tab2:
                         config_op_nuevo = {
                             "Velocidad": vel_ed, 
                             "Rendimiento": rend_ed, 
-                            "Margen": margen_decimal_ed,
-                            "Horas_Laborales_Semana": horas_lab_ed,
-                            "Horas_Extra_Semana": horas_ext_ed
+                            "Margen": margen_decimal_ed
                         }
                         
                         costos_var_nuevo = {

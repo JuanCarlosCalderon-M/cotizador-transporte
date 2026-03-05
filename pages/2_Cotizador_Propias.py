@@ -39,7 +39,6 @@ with st.container(border=True):
     ciudad_destino = c_dest.text_input("Ciudad Destino", placeholder="Ej. Guadalajara, Jal.")
     distancia_ida = c_dist.number_input("Distancia Ida (km) [Se cobrará Ida y Vuelta automáticamente]", min_value=1.0, value=234.0)
 
-    # --- CAMBIO: 3 columnas para integrar el Viaje Manual ---
     c_h1, c_h2, c_h3 = st.columns(3)
     horas_carga = c_h1.number_input("Horas de Carga estimadas", min_value=0.0, value=6.0)
     horas_descarga = c_h2.number_input("Horas de Descarga estimadas", min_value=0.0, value=6.0)
@@ -74,7 +73,7 @@ if st.button("🧮 Calcular Tarifa", type="primary", use_container_width=True):
             "distancia_ida": distancia_ida,
             "horas_carga": horas_carga,
             "horas_descarga": horas_descarga,
-            "viajes_semana": viajes_semana_input, # <--- CAMBIO: Se pasa a la fórmula
+            "viajes_semana": viajes_semana_input, 
             "casetas": casetas,
             "pension": pension,
             "maniobras": maniobras,
@@ -84,7 +83,8 @@ if st.button("🧮 Calcular Tarifa", type="primary", use_container_width=True):
         res = calcular_tarifa_viaje(inputs_viaje, grupo_data)
 
         st.markdown("---")
-        st.markdown(f"<h3 style='text-align: center;'>Tarifa Sugerida de Venta: <span style='color:#273176;'>${res['precio_venta']:,.2f} MXN</span></h3>", unsafe_allow_html=True)
+        # --- Título Central = Costo Total (Compra) ---
+        st.markdown(f"<h3 style='text-align: center;'>Tarifa Sugerida de Compra: <span style='color:#273176;'>${res['costo_total']:,.2f} MXN</span></h3>", unsafe_allow_html=True)
         
         texto_modalidad = " (+60% aplicado al Costo Total y Tarifa)" if modalidad == "Round trip" else ""
         
@@ -96,9 +96,11 @@ if st.button("🧮 Calcular Tarifa", type="primary", use_container_width=True):
         m1.metric("Fijo (Prorrateo Viaje)", f"${res['fijo_por_viaje']:,.2f}")
         m2.metric("Variables (Km)", f"${res['variable_km_viaje']:,.2f}", f"{res['distancia_total']} km totales", delta_color="off")
         m3.metric("Extras (Casetas x2, etc)", f"${res['extras_viaje']:,.2f}")
-        m4.metric("Costo Total del Viaje", f"${res['costo_total']:,.2f}")
+        
+        # --- Métrica Final = Precio de Venta (Con Margen) ---
+        margen_porcentaje = res['margen_esperado'] * 100
+        m4.metric(f"Tarifa Venta ({margen_porcentaje:.0f}%)", f"${res['precio_venta']:,.2f}")
 
-        # --- SECCIÓN DE DESGLOSE ---
         st.markdown("<br>", unsafe_allow_html=True)
         with st.expander("📊 Ver Desglose Detallado por Viaje", expanded=False):
             col_fijos, col_vars = st.columns(2)
