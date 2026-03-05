@@ -39,9 +39,11 @@ with st.container(border=True):
     ciudad_destino = c_dest.text_input("Ciudad Destino", placeholder="Ej. Guadalajara, Jal.")
     distancia_ida = c_dist.number_input("Distancia Ida (km) [Se cobrará Ida y Vuelta automáticamente]", min_value=1.0, value=234.0)
 
-    c_h1, c_h2 = st.columns(2)
+    # --- CAMBIO: 3 columnas para integrar el Viaje Manual ---
+    c_h1, c_h2, c_h3 = st.columns(3)
     horas_carga = c_h1.number_input("Horas de Carga estimadas", min_value=0.0, value=6.0)
     horas_descarga = c_h2.number_input("Horas de Descarga estimadas", min_value=0.0, value=6.0)
+    viajes_semana_input = c_h3.number_input("Viajes a la semana", min_value=1.0, max_value=9.0, value=1.5, step=0.5)
 
 with st.container(border=True):
     st.subheader("2. Costos Extras por Viaje")
@@ -72,6 +74,7 @@ if st.button("🧮 Calcular Tarifa", type="primary", use_container_width=True):
             "distancia_ida": distancia_ida,
             "horas_carga": horas_carga,
             "horas_descarga": horas_descarga,
+            "viajes_semana": viajes_semana_input, # <--- CAMBIO: Se pasa a la fórmula
             "casetas": casetas,
             "pension": pension,
             "maniobras": maniobras,
