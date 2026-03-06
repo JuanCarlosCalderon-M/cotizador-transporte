@@ -42,7 +42,10 @@ with st.container(border=True):
     c_h1, c_h2, c_h3 = st.columns(3)
     horas_carga = c_h1.number_input("Horas de Carga estimadas", min_value=0.0, value=6.0)
     horas_descarga = c_h2.number_input("Horas de Descarga estimadas", min_value=0.0, value=6.0)
-    viajes_semana_input = c_h3.number_input("Viajes a la semana", min_value=1.0, max_value=9.0, value=1.5, step=0.5)
+    
+    # --- CAMBIO: Se usa un selectbox cerrado para forzar los saltos exactos de 0.5 ---
+    opciones_viajes = [x / 2.0 for x in range(2, 19)] # Esto crea la lista: [1.0, 1.5, 2.0 ... 9.0]
+    viajes_semana_input = c_h3.selectbox("Viajes a la semana", options=opciones_viajes, index=1) # index 1 corresponde al valor 1.5
 
 with st.container(border=True):
     st.subheader("2. Costos Extras por Viaje")
@@ -83,7 +86,6 @@ if st.button("🧮 Calcular Tarifa", type="primary", use_container_width=True):
         res = calcular_tarifa_viaje(inputs_viaje, grupo_data)
 
         st.markdown("---")
-        # --- Título Central = Costo Total (Compra) ---
         st.markdown(f"<h3 style='text-align: center;'>Tarifa Sugerida de Compra: <span style='color:#273176;'>${res['costo_total']:,.2f} MXN</span></h3>", unsafe_allow_html=True)
         
         texto_modalidad = " (+60% aplicado al Costo Total y Tarifa)" if modalidad == "Round trip" else ""
@@ -97,7 +99,6 @@ if st.button("🧮 Calcular Tarifa", type="primary", use_container_width=True):
         m2.metric("Variables (Km)", f"${res['variable_km_viaje']:,.2f}", f"{res['distancia_total']} km totales", delta_color="off")
         m3.metric("Extras (Casetas x2, etc)", f"${res['extras_viaje']:,.2f}")
         
-        # --- Métrica Final = Precio de Venta (Con Margen) ---
         margen_porcentaje = res['margen_esperado'] * 100
         m4.metric(f"Tarifa Venta ({margen_porcentaje:.0f}%)", f"${res['precio_venta']:,.2f}")
 
