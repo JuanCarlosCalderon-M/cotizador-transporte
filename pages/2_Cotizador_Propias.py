@@ -2,6 +2,13 @@ import streamlit as st
 import pandas as pd
 from utils import obtener_grupos_operativos, calcular_tarifa_viaje, inyectar_css
 
+# --- BLOQUEO POR ROL (RBAC) ---
+rol_actual = st.session_state.get("rol", "Desconocido")
+if rol_actual not in ["Master", "Cotizador"]:
+    st.error("🚫 Acceso Denegado: Tu rol actual no tiene permisos para realizar cotizaciones.")
+    st.stop()
+# ------------------------------
+
 inyectar_css()
 st.title("🚛 Cotizador de Unidades Propias")
 
@@ -43,9 +50,9 @@ with st.container(border=True):
     horas_carga = c_h1.number_input("Horas de Carga estimadas", min_value=0.0, value=6.0)
     horas_descarga = c_h2.number_input("Horas de Descarga estimadas", min_value=0.0, value=6.0)
     
-    # --- CAMBIO: Se usa un selectbox cerrado para forzar los saltos exactos de 0.5 ---
-    opciones_viajes = [x / 2.0 for x in range(1, 19)] # Esto crea la lista: [1.0, 1.5, 2.0 ... 9.0]
-    viajes_semana_input = c_h3.selectbox("Viajes a la semana", options=opciones_viajes, index=1) # index 1 corresponde al valor 1.5
+    # --- CAMBIO: Rango inicia en 1 (0.5) y el index 2 equivale a 1.5 ---
+    opciones_viajes = [x / 2.0 for x in range(1, 19)] # Esto crea la lista: [0.5, 1.0, 1.5 ... 9.0]
+    viajes_semana_input = c_h3.selectbox("Viajes a la semana", options=opciones_viajes, index=2) 
 
 with st.container(border=True):
     st.subheader("2. Costos Extras por Viaje")
@@ -121,5 +128,4 @@ if st.button("🧮 Calcular Tarifa", type="primary", use_container_width=True):
 
                 if not df_otros_limpio.empty and total_otros > 0:
                     st.markdown("#### Costos Extras")
-
                     st.dataframe(df_otros_limpio, hide_index=True, width="stretch")

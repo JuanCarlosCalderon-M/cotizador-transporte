@@ -4,6 +4,14 @@ import pandas as pd
 import time
 from utils import obtener_grupos_operativos, gestionar_grupo_operativo, inyectar_css
 
+# --- BLOQUEO POR ROL (RBAC) ---
+# Debe ir antes de pintar cualquier cosa de la UI para evitar parpadeos
+rol_actual = st.session_state.get("rol", "Desconocido")
+if rol_actual not in ["Master", "Operaciones"]:
+    st.error("🚫 Acceso Denegado: Tu rol actual no tiene permisos para crear o editar Grupos Operativos.")
+    st.stop()
+# ------------------------------
+
 @st.cache_data
 def cargar_opciones_excel():
     try:
