@@ -103,8 +103,9 @@ def calcular_tarifa_viaje(inputs, grupo_data: dict[dict | str]):
     # Tiempo de Ciclo Total
     horas_totales = t_r + t_c + t_d
 
-    # --- Frecuencia: Input manual ---
-    viajes_semana = float(inputs.get("viajes_semana", 1.0))
+    # --- CAMBIO: Frecuencia con redondeo forzado al 0.5 más cercano ---
+    viajes_bruto = float(inputs.get("viajes_semana", 1.0))
+    viajes_semana = round(viajes_bruto * 2) / 2
     viajes_mes = round(viajes_semana * 4.34, 2)
 
     # --- Cálculos Financieros ---
@@ -121,7 +122,6 @@ def calcular_tarifa_viaje(inputs, grupo_data: dict[dict | str]):
     else:
         costo_total_viaje = costo_total_base
 
-    # Cálculo de tarifa de venta con el margen objetivo de la base de datos
     precio_venta = costo_total_viaje / (1 - margen) if margen < 1 else costo_total_viaje
 
     # --- DESGLOSE DETALLADO POR VIAJE ---
