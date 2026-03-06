@@ -8,6 +8,10 @@ credentials:
       email: rtorres@esgari.com
       name: Salvador Ortiz
       password: '$2b$12$QD.ewzmQ91dyTpBdVyww5Oe63hnoEtLvzCCH8QyGMAmOxOm6Ahi4y'
+    LuisPricing:
+      email: lnavarro@esgari.com
+      name: Luis Navarro
+      password: '$2b$12$onRsf5wKTZ7at32.ra3vTu8vr0XyYctizojYnkcSSS9jsimtyz/ny'
 cookie:
   expiry_days: 0
   key: "firma_secreta_esgari_2026_super_larga_y_segura_12345" # <- Debe tener 32+ caracteres
