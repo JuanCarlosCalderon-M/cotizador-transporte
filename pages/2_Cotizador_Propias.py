@@ -44,7 +44,7 @@ with st.container(border=True):
     horas_descarga = c_h2.number_input("Horas de Descarga estimadas", min_value=0.0, value=6.0)
     
     # --- CAMBIO: Se usa un selectbox cerrado para forzar los saltos exactos de 0.5 ---
-    opciones_viajes = [x / 2.0 for x in range(2, 19)] # Esto crea la lista: [1.0, 1.5, 2.0 ... 9.0]
+    opciones_viajes = [x / 2.0 for x in range(1, 19)] # Esto crea la lista: [1.0, 1.5, 2.0 ... 9.0]
     viajes_semana_input = c_h3.selectbox("Viajes a la semana", options=opciones_viajes, index=1) # index 1 corresponde al valor 1.5
 
 with st.container(border=True):
@@ -121,4 +121,5 @@ if st.button("🧮 Calcular Tarifa", type="primary", use_container_width=True):
 
                 if not df_otros_limpio.empty and total_otros > 0:
                     st.markdown("#### Costos Extras")
+
                     st.dataframe(df_otros_limpio, hide_index=True, width="stretch")
